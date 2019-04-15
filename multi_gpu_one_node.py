@@ -17,8 +17,10 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     steps=args.steps
-    batch_size=args.batchsize
+    #batch_size=args.batchsize
     gpu=args.ngpu
+    batch_size=32*gpu
+    print('number of gpus: '+ str(gpu)+' batchsize: '+ str(batch_size))
 
     cuda=''
     for k in range(gpu):
@@ -46,8 +48,10 @@ if __name__ == '__main__':
     ave_forward_throughput=[]
     ave_backward_throughput=[]
 
-    ave_start=time.time()
+    #ave_start=time.time()
     for t in range(steps):
+        if t==4:
+            ave_start=time.time()
         start=time.time()
         x = model(tx)
         loss = loss_func(x, ty)
@@ -67,10 +71,11 @@ if __name__ == '__main__':
 
     ave_end=time.time()
     #print(end-start)
-    throughput = steps*batch_size/(ave_end-ave_start)
+    #throughput = steps*batch_size/(ave_end-ave_start)
+    throughput = (steps-5)*batch_size/(ave_end-ave_start)
 
-    ave_fwd_throughput=np.mean(ave_forward_throughput[1:])
-    ave_bwd_throughput=np.mean(ave_backward_throughput[1:])
+    ave_fwd_throughput=np.mean(ave_forward_throughput[5:])
+    ave_bwd_throughput=np.mean(ave_backward_throughput[5:])
 
     print('ave_forward_throughput is {:.4f}'.format(ave_fwd_throughput))
     print('ave_backward_throughput is {:.4f}'.format(ave_bwd_throughput))
